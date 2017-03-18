@@ -1,0 +1,149 @@
+let shrek = false
+class App extends React.Component {
+   constructor(props) {
+      super(props);
+      this.state = {
+         currentboard: ['', '', '',
+            '', '', '',
+            '', '', ''
+         ],
+         turn: '',
+         player: '',
+         showform: true
+      }
+   }
+   click(i) {
+      if (this.state.currentboard[i] == '') {
+         shrek = true
+         if (this.state.player == 'X') {
+            let local = this.state.currentboard;
+            local[i] = "X"
+            this.setState({
+               currentboard: local,
+            }, function() {
+               this.checkwinner();
+               this.ai()
+            })
+         } else {
+            let local = this.state.currentboard;
+            local[i] = "O"
+            this.setState({
+               currentboard: local,
+            }, function() {
+               this.checkwinner()
+               this.ai()
+            })
+         }
+      }
+   }
+   checkwinner() {
+      let copy = this.state.currentboard
+      if ((copy[0] == copy[1] && copy[1] == copy[2] && copy[0] !== '' && copy[1] !== '' && copy[2] !== '') || (copy[3] == copy[4] && copy[4] == copy[5] && copy[3] !== '' && copy[4] !== '' && copy[5] !== '') || (copy[6] == copy[7] && copy[7] == copy[8] && copy[6] !== '' && copy[7] !== '' && copy[8] !== '') || (copy[0] == copy[3] && copy[3] == copy[6] && copy[0] !== '' && copy[3] !== '' && copy[6] !== '') || (copy[1] == copy[4] && copy[4] == copy[7] && copy[1] !== '' && copy[4] !== '' && copy[7] !== '') || (copy[2] == copy[5] && copy[5] == copy[8] && copy[2] !== '' && copy[5] !== '' && copy[8] !== '') || (copy[2] == copy[4] && copy[4] == copy[6] && copy[2] !== '' && copy[4] !== '' && copy[6] !== '') || (copy[0] == copy[4] && copy[4] == copy[8] && copy[0] !== '' && copy[4] !== '' && copy[8] !== '')) {
+         if (shrek) {
+            alert('You won!')
+            this.clear()
+         } else if (!shrek) {
+            alert('Computer won!')
+            this.clear()
+         }
+      } else if ((copy[0] && copy[1] && copy[2] && copy[3] && copy[4] && copy[5] && copy[6] && copy[7] && copy[8]) !== '') {
+         alert('Draw')
+         this.clear()
+      }
+   }
+   ai() {
+      if (this.state.turn !== '' && shrek != null) {
+         shrek = false
+         let possible = []
+         let boardcopy = this.state.currentboard
+         for (let x = 0; x < boardcopy.length; x++) {
+            if (boardcopy[x] == '') {
+               possible.push(x)
+            }
+         }
+         const move = Math.floor(Math.random() * possible.length)
+         const kek = possible[move]
+         if (this.state.player == 'X') {
+            boardcopy[kek] = 'O'
+         } else {
+            boardcopy[kek] = 'X'
+         }
+         this.setState({
+            currentboard: boardcopy,
+            turn: 'ai'
+         }, function() {
+            this.checkwinner()
+         })
+
+      }
+   }
+   xchosen() {
+      shrek = true
+      this.setState({
+         player: 'X',
+         turn: 'player',
+         currentboard: ['', '', '',
+            '', '', '',
+            '', '', ''
+         ],
+         showform: false
+      })
+   }
+   clear() {
+      shrek = null
+      this.setState({
+         player: '',
+         turn: '',
+         showform: true
+      })
+   }
+   clearboard() {
+      shrek=null
+      this.setState({
+         player: '',
+         turn: '',
+         currentboard: ['', '', '',
+            '', '', '',
+            '', '', ''
+         ],
+         showform: true
+      })
+   }
+   ochosen() {
+      shrek = false
+      this.setState({
+         player: 'O',
+         turn: 'ai',
+         currentboard: ['', '', '',
+            '', '', '',
+            '', '', ''
+         ],
+         showform: false
+      }, () => this.ai())
+
+   }
+   choose() {
+      return <div><div className="row text-center" style={{fontSize: 30}}>Choose: <button onClick={()=>this.xchosen()} className='btn btn-lg btn-primary' style={{fontSize: 30}}><strong>X</strong></button> or <button style={{fontSize: 30}}className='btn btn-lg btn-warning' onClick={()=>this.ochosen()}><strong>O</strong></button></div><br/><div className="row text-center" style={{fontSize: 20}}>X always go first</div></div>
+   }
+   render() {
+      const table = this.state.currentboard.map((item, i) => {
+         return <button className="btn btn-default cell" style={{fontSize: "60px"}} key={i} onClick={()=>this.click(i)}>{item}</button>
+      })
+      return (<div>
+            <div className="row text-center" id="title">Tic Tac Toe by <a href='https://www.github.com/zooll8' target='_blank'>Zooll</a></div>
+            <div id="container" className="text-center">
+               <table>
+                  {table}
+               </table>
+            </div>
+            <div className="row text-center">
+               {!this.state.showform ? <button className="btn btn-lg btn-default" onClick={()=>this.clearboard()}>
+                  Clear Board
+               </button>:null}
+            </div><br/>
+            {this.state.showform ? this.choose() : null }
+     </div>)
+   }
+}
+
+ReactDOM.render(<App/>, document.querySelector("#render"));
